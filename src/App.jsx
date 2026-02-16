@@ -1,7 +1,7 @@
 import { BrowserRouter, Routes, Route, Link, useLocation } from 'react-router-dom';
 import { Component, Suspense, lazy, useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence, useInView, useMotionValue, useTransform, useSpring } from 'framer-motion';
-import ParticleNetwork from './components/ParticleNetwork';
+import ConfettiField from './components/ConfettiField';
 
 const IssueCertificate = lazy(() => import('./components/IssueCertificate'));
 const VerifyCertificate = lazy(() => import('./components/VerifyCertificate'));
@@ -238,29 +238,113 @@ function Navbar() {
 }
 
 /* ── HOME ─────────────────────────────────────────────────────── */
+
+/* RotatingTypewriter — continuously cycles through phrases with type + erase */
+const ROTATING_PHRASES = [
+  { text: 'reimagined.', color: '#16a34a' },
+  { text: 'verified instantly.', color: '#6366f1' },
+  { text: 'tamper-proof.', color: '#06b6d4' },
+  { text: 'built by NomadxCoder.', color: '#f59e0b' },
+  { text: 'powered by Cardano.', color: '#8b5cf6' },
+  { text: 'borderless.', color: '#ec4899' },
+];
+
+function RotatingTypewriter({ phrases = ROTATING_PHRASES, typeSpeed = 50, eraseSpeed = 30, pauseAfterType = 2000, pauseAfterErase = 400 }) {
+  const [phraseIdx, setPhraseIdx] = useState(0);
+  const [displayed, setDisplayed] = useState('');
+  const [isErasing, setIsErasing] = useState(false);
+
+  useEffect(() => {
+    const current = phrases[phraseIdx];
+    let timeout;
+
+    if (!isErasing) {
+      // Typing
+      if (displayed.length < current.text.length) {
+        timeout = setTimeout(() => {
+          setDisplayed(current.text.slice(0, displayed.length + 1));
+        }, typeSpeed + Math.random() * 30); // slight randomness for human feel
+      } else {
+        // Finished typing — pause then start erasing
+        timeout = setTimeout(() => setIsErasing(true), pauseAfterType);
+      }
+    } else {
+      // Erasing
+      if (displayed.length > 0) {
+        timeout = setTimeout(() => {
+          setDisplayed(displayed.slice(0, -1));
+        }, eraseSpeed);
+      } else {
+        // Finished erasing — move to next phrase
+        timeout = setTimeout(() => {
+          setPhraseIdx((phraseIdx + 1) % phrases.length);
+          setIsErasing(false);
+        }, pauseAfterErase);
+      }
+    }
+
+    return () => clearTimeout(timeout);
+  }, [displayed, isErasing, phraseIdx, phrases, typeSpeed, eraseSpeed, pauseAfterType, pauseAfterErase]);
+
+  const currentColor = phrases[phraseIdx].color;
+
+  return (
+    <span>
+      <span style={{ color: currentColor, transition: 'color 0.3s' }}>{displayed}</span>
+      <span
+        className="inline-block w-[3px] ml-0.5 align-middle"
+        style={{
+          height: '0.85em',
+          background: currentColor,
+          animation: 'blink 0.8s step-end infinite',
+          transition: 'background 0.3s',
+        }}
+      />
+    </span>
+  );
+}
+
+/* ── CardanoBadge — animated gradient border + float ──── */
+function CardanoBadge() {
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 16 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
+      className="inline-block mb-8"
+    >
+      <motion.div
+        animate={{ y: [0, -4, 0] }}
+        transition={{ repeat: Infinity, duration: 3, ease: 'easeInOut' }}
+        className="cardano-badge-pill"
+      >
+        <span className="cardano-badge-gradient-border" />
+        <span className="cardano-badge-content">
+          <span className="cardano-badge-ada">₳</span>
+          <span className="cardano-badge-label">Built on Cardano Blockchain</span>
+          <span className="cardano-badge-dot" />
+        </span>
+      </motion.div>
+    </motion.div>
+  );
+}
+
 function Home() {
   return (
     <div className="overflow-hidden">
       {/* ── HERO ── */}
-      <section className="relative flex items-center justify-center" style={{ minHeight: '100vh', paddingTop: '80px', paddingBottom: '80px' }}>
-        <ParticleNetwork particleCount={100} colors={['#16a34a', '#6366f1', '#f59e0b', '#06b6d4', '#ec4899']} />
+      <section className="relative flex items-center justify-center" style={{ minHeight: '92vh', paddingTop: '40px', paddingBottom: '60px' }}>
+        <ConfettiField particleCount={250} />
 
         <div className="relative z-10 mx-auto max-w-5xl px-6 text-center">
-          <motion.div initial={{ opacity: 0, scale: 0.8 }} animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.6 }}>
-            <div className="inline-flex items-center gap-2 mb-8 tag tag-accent">
-              <motion.span animate={{ scale: [1, 1.3, 1] }} transition={{ repeat: Infinity, duration: 2 }}
-                className="h-1.5 w-1.5 rounded-full bg-[#16a34a]" />
-              Built on Cardano Blockchain
-            </div>
-          </motion.div>
+          <CardanoBadge />
 
           <motion.h1 initial={{ opacity: 0, y: 50 }} animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 1, delay: 0.15, ease: [0.16, 1, 0.3, 1] }}
-            className="display-xl">
+            className="display-lg">
             Academic credentials,
             <br />
-            <span className="text-accent">reimagined.</span>
+            <RotatingTypewriter />
           </motion.h1>
 
           <motion.p initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
@@ -320,7 +404,7 @@ function Home() {
       </section>
 
       {/* ── HOW IT WORKS ── */}
-      <section className="py-28 px-6 bg-white">
+      <section className="py-28 px-6">
         <div className="mx-auto max-w-5xl">
           <Reveal>
             <p className="label-text text-center mb-6">How it works</p>
@@ -374,7 +458,7 @@ function Home() {
       </section>
 
       {/* ── TRUST NUMBERS — animated counters ── */}
-      <section className="py-28 px-6 bg-[#f0faf3] relative overflow-hidden">
+      <section className="py-28 px-6 relative overflow-hidden">
         <div className="relative z-10 mx-auto max-w-5xl">
           <Reveal>
             <p className="label-text text-center mb-6">By the numbers</p>
@@ -382,7 +466,7 @@ function Home() {
               Built for trust.
             </h2>
           </Reveal>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-8 md:gap-12">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
             {[
               { value: 'CIP-25', label: 'NFT Standard', numeric: false },
               { value: '0.2', label: 'ADA Per Credential', suffix: '₳', numeric: true },
@@ -390,7 +474,7 @@ function Home() {
               { value: '100', label: 'Institutions', suffix: '+', numeric: true },
             ].map((s, i) => (
               <Reveal key={s.label} delay={0.1 * i}>
-                <div className="text-center">
+                <div className="text-center p-8 rounded-2xl border border-gray-100 hover:shadow-lg hover:border-gray-200 transition-all duration-300">
                   <p className="stat-number" style={{ color: '#16a34a' }}>
                     {s.numeric ? (
                       <AnimatedCounter value={s.value} suffix={s.suffix || ''} duration={2} />
@@ -408,7 +492,7 @@ function Home() {
 
       {/* ── FEATURES — tilt cards ── */}
       <section className="py-28 px-6 relative overflow-hidden">
-        <ParticleNetwork particleCount={40} colors={['#f59e0b', '#6366f1', '#06b6d4']} />
+        <ConfettiField particleCount={120} />
         <div className="relative z-10 mx-auto max-w-5xl">
           <Reveal>
             <p className="label-text text-center mb-6">Under the Hood</p>
@@ -512,7 +596,7 @@ function Home() {
 
       {/* ── CTA ── */}
       <section className="py-28 px-6 relative overflow-hidden">
-        <ParticleNetwork particleCount={50} colors={['#16a34a', '#ec4899', '#06b6d4']} />
+        <ConfettiField particleCount={140} />
         <div className="relative z-10 mx-auto max-w-3xl text-center">
           <Reveal>
             <h2 className="display-lg mb-6">

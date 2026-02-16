@@ -88,10 +88,10 @@ body {
 
 .display-lg {
   font-family: 'Space Grotesk', sans-serif;
-  font-size: clamp(2rem, 5vw, 4rem);
+  font-size: clamp(2.5rem, 6vw, 5.5rem);
   font-weight: 700;
-  line-height: 1.1;
-  letter-spacing: -0.03em;
+  line-height: 1.05;
+  letter-spacing: -0.035em;
   color: var(--ink);
 }
 
@@ -560,4 +560,99 @@ div[class*="CardanoWallet"] button {
 
 .font-mono {
   font-family: 'JetBrains Mono', monospace;
+}
+
+/* ── CardanoBadge ── */
+.cardano-badge-pill {
+  position: relative;
+  display: inline-flex;
+  padding: 2px;
+  border-radius: 999px;
+  background: conic-gradient(from 0deg,
+      #16a34a,
+      #4ade80,
+      #86efac,
+      #bbf7d0,
+      #4ade80,
+      #16a34a);
+  background-size: 100% 100%;
+  animation: badgeSpin 4s linear infinite;
+}
+
+@keyframes badgeSpin {
+  to {
+    filter: hue-rotate(360deg);
+  }
+}
+
+.cardano-badge-gradient-border {
+  display: none;
+  /* border is handled by parent conic-gradient */
+}
+
+.cardano-badge-content {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 18px 8px 12px;
+  border-radius: 999px;
+  background: #ffffff;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--ink);
+  white-space: nowrap;
+}
+
+.cardano-badge-ada {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: var(--accent-light);
+  color: var(--accent);
+  font-size: 14px;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.cardano-badge-label {
+  letter-spacing: 0.02em;
+  color: var(--ink-secondary);
+}
+
+.cardano-badge-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--accent);
+  box-shadow: 0 0 0 0 rgba(22, 163, 74, 0.4);
+  animation: dotPulse 2s ease-in-out infinite;
+  flex-shrink: 0;
+}
+
+@keyframes dotPulse {
+
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 rgba(22, 163, 74, 0.4);
+  }
+
+  50% {
+    box-shadow: 0 0 0 6px rgba(22, 163, 74, 0);
+  }
+}
+
+/* Typewriter cursor blink */
+@keyframes blink {
+
+  0%,
+  100% {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: 0;
+  }
 }

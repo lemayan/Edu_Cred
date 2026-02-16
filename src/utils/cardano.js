@@ -379,6 +379,7 @@ export async function mintCertificateNFT(wallet, certData) {
     issuerType: "Government of Kenya",
     issuerInstitution: certData.issuerInstitution || "Ministry of Education",
     documentHash: certData.documentHash,
+    textHash: certData.textHash || "",
     standard: "CIP-25",
     system: "EduCred v2.0 — Kenya National Credential System",
   };
