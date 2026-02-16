@@ -20,8 +20,8 @@ function MethodTabs({ selected, onChange }) {
       {methods.map((m) => (
         <button key={m.id} onClick={() => onChange(m.id)}
           className={`px-5 py-2.5 rounded-full text-[13px] font-semibold transition-all ${selected === m.id
-            ? 'bg-white text-[#111] shadow-sm'
-            : 'text-[#888] hover:text-[#555]'
+            ? 'bg-[#16a34a] text-white shadow-md'
+            : 'text-[#333] hover:text-black hover:bg-black/5'
             }`}>
           {m.label}
         </button>
@@ -185,8 +185,8 @@ function PolicyResultsList({ assets, onSelect, selectedAsset, selectedMeta, load
                 <button
                   onClick={() => onSelect(asset.asset)}
                   className={`w-full text-left rounded-xl border-2 transition-all p-4 ${isSelected
-                      ? 'border-[#16a34a] bg-[#f0faf3]'
-                      : 'border-gray-100 bg-white hover:border-gray-200 hover:shadow-sm'
+                    ? 'border-[#16a34a] bg-[#f0faf3]'
+                    : 'border-gray-100 bg-white hover:border-gray-200 hover:shadow-sm'
                     }`}
                 >
                   <div className="flex items-center justify-between">
@@ -266,6 +266,9 @@ export default function VerifyCertificate() {
   // File hash
   const [hashMatch, setHashMatch] = useState(null);
   const fileInputRef = useRef(null);
+
+  // Derive the active credential metadata (from single result or selected policy asset)
+  const activeMeta = singleResult || selectedMeta;
 
   const resetResults = () => {
     setSingleResult(null);
@@ -357,7 +360,7 @@ export default function VerifyCertificate() {
       <div className="card-elevated p-8">
         {method === 'hash' ? (
           <>
-            <h2 className="text-lg font-bold mb-2">Verify by Document</h2>
+            <h2 className="text-lg font-bold mb-2 text-[#111]">Verify by Document</h2>
             <p className="body-sm mb-4">
               Upload the original certificate file to compute its SHA-256 hash.
               Compare the result against the credential's on-chain document hash.
@@ -373,9 +376,39 @@ export default function VerifyCertificate() {
                   </svg>
                   <p className="font-semibold text-sm">{hashMatch.fileName}</p>
                   <p className="text-xs text-gray-400 mt-2 font-mono break-all">{hashMatch.hash}</p>
-                  <p className="text-xs text-gray-500 mt-3">
-                    Compare this hash against the credential's on-chain <code>documentHash</code> field.
-                  </p>
+                  <p className="text-xs text-gray-400 mt-2 font-mono break-all">{hashMatch.hash}</p>
+
+                  {/* Automatic Comparison */}
+                  {activeMeta ? (
+                    <div className={`mt-4 p-3 rounded-lg border ${activeMeta.documentHash === hashMatch.hash
+                      ? 'bg-green-50 border-green-200 text-green-700'
+                      : 'bg-red-50 border-red-200 text-red-700'
+                      }`}>
+                      <div className="flex gap-2">
+                        {activeMeta.documentHash === hashMatch.hash ? (
+                          <svg className="h-5 w-5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" /></svg>
+                        ) : (
+                          <svg className="h-5 w-5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
+                        )}
+                        <div>
+                          <p className="font-bold text-sm">
+                            {activeMeta.documentHash === hashMatch.hash ? 'Match Verified' : 'Hash Mismatch'}
+                          </p>
+                          <p className="text-xs mt-1">
+                            {activeMeta.documentHash === hashMatch.hash
+                              ? 'This file matches the on-chain credential record.'
+                              : `Does not match the currently loaded credential (Hash: ${activeMeta.documentHash?.slice(0, 8)}...).`}
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  ) : (
+                    <p className="text-xs text-gray-500 mt-3">
+                      Compare this hash against the credential's on-chain <code>documentHash</code> field.
+                      <br />
+                      <span className="italic text-gray-400">(Tip: Find a credential in the other tabs first to compare automatically)</span>
+                    </p>
+                  )}
                 </div>
               ) : (
                 <div>
@@ -390,7 +423,7 @@ export default function VerifyCertificate() {
           </>
         ) : (
           <>
-            <h2 className="text-lg font-bold mb-2">
+            <h2 className="text-lg font-bold mb-2 text-[#111]">
               {method === 'asset' ? 'Verify by Asset ID' : 'Verify by Policy ID'}
             </h2>
             <p className="body-sm mb-4">

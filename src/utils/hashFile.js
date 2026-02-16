@@ -18,7 +18,7 @@ export function hashFile(file) {
 
     reader.onload = (event) => {
       try {
-        const wordArray = CryptoJS.lib.WordArray.create(event.target.result);
+        const wordArray = CryptoJS.lib.WordArray.create(new Uint8Array(event.target.result));
         const hash = CryptoJS.SHA256(wordArray).toString(CryptoJS.enc.Hex);
         resolve(hash);
       } catch (err) {
