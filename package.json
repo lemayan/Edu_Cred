@@ -1,0 +1,38 @@
+{
+  "name": "edu-cred",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@emurgo/cardano-serialization-lib-browser": "^15.0.3",
+    "@heroicons/react": "^2.2.0",
+    "@meshsdk/core": "^1.7.6",
+    "@meshsdk/react": "^1.7.6",
+    "crypto-browserify": "^3.12.1",
+    "crypto-js": "^4.2.0",
+    "events": "^3.3.0",
+    "framer-motion": "^12.34.0",
+    "lodash-es": "^4.17.23",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "react-router-dom": "^6.28.0",
+    "stream-browserify": "^3.0.0",
+    "util": "^0.12.5"
+  },
+  "devDependencies": {
+    "@types/react": "^18.3.12",
+    "@types/react-dom": "^18.3.1",
+    "@vitejs/plugin-react": "^4.3.4",
+    "autoprefixer": "^10.4.20",
+    "postcss": "^8.4.49",
+    "tailwindcss": "^3.4.15",
+    "vite": "^6.0.0",
+    "vite-plugin-top-level-await": "^1.6.0",
+    "vite-plugin-wasm": "^3.5.0"
+  }
+}

@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>EduCred — Decentralized Certificate Verification on Cardano</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  </head>
+  <body class="min-h-screen bg-gray-950 text-white antialiased">
+    <div id="root"></div>
+    <script>
+      // Comprehensive CommonJS/Node.js polyfills for @sidan-lab WASM
+      window.global = window.globalThis = window;
+      window.__dirname = '/';
+      window.__filename = '/index.js';
+      
+      window.process = window.process || { 
+        env: {}, 
+        argv: [],
+        version: 'v18.0.0',
+        versions: { node: '18.0.0' },
+        platform: 'browser',
+        nextTick: (fn) => Promise.resolve().then(fn),
+        cwd: () => '/',
+        browser: true
+      };
+      
+      window.Buffer = window.Buffer || { 
+        from: (data) => new Uint8Array(data),
+        isBuffer: () => false 
+      };
+      
+      window.require = function(mod) { 
+        if (mod === 'util') return { TextDecoder, TextEncoder };
+        if (mod === 'path') return { 
+          join: (...args) => args.filter(a => a).join('/').replace(/\/+/g, '/'),
+          resolve: (...args) => '/' + args.filter(a => a).join('/').replace(/\/+/g, '/'),
+          dirname: (p) => p.split('/').slice(0, -1).join('/') || '/',
+          basename: (p) => p.split('/').pop() || ''
+        };
+        if (mod === 'fs') return { 
+          readFileSync: () => new Uint8Array(0),
+          existsSync: () => false,
+          readFile: (path, cb) => cb(null, new Uint8Array(0))
+        };
+        if (mod === 'crypto') return {};
+        return {};
+      };
+      
+      window.module = { require: window.require, exports: {} };
+      window.exports = window.module.exports;
+    </script>
+    <script type="module" src="/src/main.jsx"></script>
+  </body>
+</html>
