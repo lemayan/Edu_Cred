@@ -1,15 +1,7 @@
 import { useEffect, useRef, useCallback } from 'react';
 
 /**
- * ConfettiField — Antigravity-style scattered confetti dashes
- *
- * Features:
- * - Hundreds of small colorful line segments / dashes scattered across the page
- * - Multi-colored: indigo, purple, blue, red, pink, coral, muted tones
- * - Each dash drifts slowly, rotates gently
- * - Mouse interaction: dashes near cursor scatter/swirl away
- * - Depth layers: varying sizes and opacities for parallax feel
- * - Very clean, minimal, premium aesthetic on white
+ * ConfettiField — Original Gravity/Wobble version
  */
 export default function ConfettiField({
     className = '',
@@ -21,21 +13,10 @@ export default function ConfettiField({
     const animRef = useRef(null);
 
     const defaultColors = [
-        '#6366f1', // indigo
-        '#8b5cf6', // purple
-        '#a78bfa', // light purple
-        '#3b82f6', // blue
-        '#60a5fa', // light blue
-        '#2563eb', // deep blue
-        '#ec4899', // pink
-        '#f43f5e', // rose
-        '#ef4444', // red
-        '#f97316', // orange
-        '#06b6d4', // cyan
-        '#14b8a6', // teal
-        '#16a34a', // green
-        '#94a3b8', // slate
-        '#cbd5e1', // light slate
+        '#6366f1', '#8b5cf6', '#a78bfa', '#3b82f6',
+        '#60a5fa', '#2563eb', '#ec4899', '#f43f5e',
+        '#ef4444', '#f97316', '#06b6d4', '#14b8a6',
+        '#16a34a', '#94a3b8', '#cbd5e1'
     ];
 
     const initParticles = useCallback((w, h, count) => {
@@ -142,8 +123,8 @@ export default function ConfettiField({
                 p.vx += (p.baseVx - p.vx) * 0.015;
                 p.vy += (p.baseVy - p.vy) * 0.015;
 
-                // Sinusoidal wobble — gentle side-to-side sway
-                const wobble = Math.sin(time * p.wobbleFreq + p.wobblePhase) * p.wobbleAmp;
+                // Strengthen the wobble for a "swooping" feel
+                const wobble = Math.sin(time * p.wobbleFreq + p.wobblePhase) * (p.wobbleAmp * 2.5);
 
                 // Damping
                 p.vx *= 0.995;

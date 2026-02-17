@@ -1,7 +1,7 @@
 import { BrowserRouter, Routes, Route, Link, useLocation } from 'react-router-dom';
 import { Component, Suspense, lazy, useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence, useInView, useMotionValue, useTransform, useSpring } from 'framer-motion';
-import ConfettiField from './components/ConfettiField';
+
 
 const IssueCertificate = lazy(() => import('./components/IssueCertificate'));
 const VerifyCertificate = lazy(() => import('./components/VerifyCertificate'));
@@ -304,7 +304,7 @@ function RotatingTypewriter({ phrases = ROTATING_PHRASES, typeSpeed = 50, eraseS
   );
 }
 
-/* ── CardanoBadge — animated gradient border + float ──── */
+/* ── CardanoBadge — simple refined look ──── */
 function CardanoBadge() {
   return (
     <motion.div
@@ -313,25 +313,22 @@ function CardanoBadge() {
       transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
       className="inline-block mb-8"
     >
-      <motion.div
-        animate={{ y: [0, -4, 0] }}
-        transition={{ repeat: Infinity, duration: 3, ease: 'easeInOut' }}
-        className="cardano-badge-pill"
-      >
-        <span className="cardano-badge-gradient-border" />
-        <span className="cardano-badge-content">
-          <span className="cardano-badge-ada">₳</span>
-          <span className="cardano-badge-label">Built on Cardano Blockchain</span>
-          <span className="cardano-badge-dot" />
-        </span>
-      </motion.div>
+      <div className="cardano-badge-pill">
+        <span className="cardano-badge-ada">₳</span>
+        <span className="cardano-badge-label">Built on Cardano Blockchain</span>
+        <span className="cardano-badge-dot" />
+      </div>
     </motion.div>
   );
 }
 
+import ConfettiField from './components/ConfettiField';
+
+/* ── Home ─────────────────────────────────────────────────────── */
 function Home() {
   return (
     <div className="overflow-hidden">
+
       {/* ── HERO ── */}
       <section className="relative flex items-center justify-center" style={{ minHeight: '92vh', paddingTop: '40px', paddingBottom: '60px' }}>
         <ConfettiField particleCount={250} />

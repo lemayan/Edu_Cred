@@ -23,7 +23,6 @@
     "react-router-dom": "^6.28.0",
     "stream-browserify": "^3.0.0",
     "tesseract.js": "^7.0.0",
-    "three": "^0.182.0",
     "util": "^0.12.5"
   },
   "devDependencies": {

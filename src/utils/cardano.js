@@ -374,6 +374,7 @@ export async function mintCertificateNFT(wallet, certData) {
     institution: certData.institution || "Not specified",
     registrationNumber: certData.registrationNumber || "Not specified",
     grade: certData.grade || "Not specified",
+    programLevel: certData.programLevel || "Not specified",
     issueDate: new Date().toISOString(),
     issuer: bech32,
     issuerType: "Government of Kenya",
