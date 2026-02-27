@@ -1,4 +1,4 @@
-import { useState, useCallback, useRef, useMemo } from 'react';
+import { useState, useCallback, useRef, useMemo, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   fetchAssetMetadata,
@@ -9,6 +9,7 @@ import { hashFile } from '../utils/hashFile';
 import { extractDocumentText, hashDocumentText } from '../utils/ocrDocument';
 import { AUTHORIZED_ISSUERS, DEMO_MODE } from '../utils/authorizedWallets';
 import ParticleNetwork from './ParticleNetwork';
+import ConfettiExplosion from './ConfettiExplosion';
 
 /* ── Pill Tabs ────────────────────────────────────────────────── */
 function MethodTabs({ selected, onChange }) {
@@ -93,10 +94,16 @@ function ResultCard({ meta, compact = false }) {
         {META_FIELDS.map(({ key, label }) => {
           const value = meta[key];
           if (!value || value === 'Not specified') return null;
+
+          const isLongHash = ['issuer', 'documentHash', 'textHash'].includes(key);
+
           return (
             <div key={key} className="flex flex-col sm:flex-row sm:items-start gap-1 sm:gap-4 py-1.5 border-b border-gray-50">
               <span className="text-[11px] font-semibold uppercase tracking-wider text-gray-400 sm:w-36 shrink-0">{label}</span>
-              <span className={`text-sm text-[#111] ${key === 'issuer' || key === 'documentHash' ? 'font-mono text-xs break-all text-gray-500' : 'font-medium'}`}>
+              <span className={`text-sm text-[#111] max-w-full ${isLongHash
+                ? 'font-mono text-xs break-all text-gray-500'
+                : 'font-medium break-words'
+                }`}>
                 {String(value)}
               </span>
             </div>
@@ -257,6 +264,7 @@ export default function VerifyCertificate() {
   const [query, setQuery] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [showConfetti, setShowConfetti] = useState(false);
 
   // Single asset result
   const [singleResult, setSingleResult] = useState(null);
@@ -284,6 +292,11 @@ export default function VerifyCertificate() {
   // Derive the active credential metadata (from single result or selected policy asset)
   const activeMeta = singleResult || selectedMeta;
 
+  const triggerConfetti = () => {
+    setShowConfetti(true);
+    setTimeout(() => setShowConfetti(false), 5000);
+  };
+
   const resetResults = () => {
     setSingleResult(null);
     setPolicyAssets(null);
@@ -298,6 +311,7 @@ export default function VerifyCertificate() {
     setScanAssetId('');
     setScanResult(null);
     setScanLoading(false);
+    setShowConfetti(false);
   };
 
   const handleSearch = async () => {
@@ -310,6 +324,7 @@ export default function VerifyCertificate() {
         const meta = await fetchAssetMetadata(query.trim());
         if (meta) {
           setSingleResult(meta);
+          triggerConfetti();
         } else {
           setError('No credential found for this asset ID. Check the ID and try again.');
         }
@@ -343,6 +358,7 @@ export default function VerifyCertificate() {
     try {
       const meta = await fetchAssetMetadata(assetId);
       setSelectedMeta(meta);
+      if (meta) triggerConfetti();
     } catch {
       setSelectedMeta(null);
     } finally {
@@ -360,6 +376,8 @@ export default function VerifyCertificate() {
       const hash = await hashFile(f);
       setQuery(hash);
       setHashMatch({ fileName: f.name, hash, status: 'computed' });
+      // Note: We don't trigger confetti here immediately as we are just hashing the file
+      // If we had the comparison logic here immediately we could, but the user might need to see the result first
     } catch (err) {
       setError('Failed to hash file: ' + err.message);
     } finally {
@@ -406,12 +424,14 @@ export default function VerifyCertificate() {
         setScanLoading(false);
         return;
       }
+      const isMatch = meta.textHash === ocrTextHash;
       setScanResult({
         meta,
-        match: meta.textHash === ocrTextHash,
+        match: isMatch,
         onChainHash: meta.textHash || '',
         scannedHash: ocrTextHash,
       });
+      if (isMatch) triggerConfetti();
     } catch (err) {
       setError(err.message || 'Lookup failed');
     } finally {
@@ -421,6 +441,7 @@ export default function VerifyCertificate() {
 
   return (
     <div className="relative min-h-screen overflow-hidden">
+      {showConfetti && <ConfettiExplosion />}
       <ParticleNetwork particleCount={60} colors={['#3b82f6', '#8b5cf6', '#06b6d4', '#6366f1']} />
       <div className="relative z-10 page-enter mx-auto max-w-2xl px-6 py-16">
         <p className="label-text mb-2">Public Verification</p>

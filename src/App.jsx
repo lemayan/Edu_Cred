@@ -322,7 +322,7 @@ function CardanoBadge() {
   );
 }
 
-import ConfettiField from './components/ConfettiField';
+import AntigravityParticles from './components/AntigravityParticles';
 
 /* ── Home ─────────────────────────────────────────────────────── */
 function Home() {
@@ -330,8 +330,8 @@ function Home() {
     <div className="overflow-hidden">
 
       {/* ── HERO ── */}
-      <section className="relative flex items-center justify-center" style={{ minHeight: '92vh', paddingTop: '40px', paddingBottom: '60px' }}>
-        <ConfettiField particleCount={250} />
+      <section className="relative flex items-center justify-center overflow-hidden" style={{ minHeight: '92vh', paddingTop: '40px', paddingBottom: '60px' }}>
+        <AntigravityParticles />
 
         <div className="relative z-10 mx-auto max-w-5xl px-6 text-center">
           <CardanoBadge />
@@ -489,7 +489,7 @@ function Home() {
 
       {/* ── FEATURES — tilt cards ── */}
       <section className="py-28 px-6 relative overflow-hidden">
-        <ConfettiField particleCount={120} />
+
         <div className="relative z-10 mx-auto max-w-5xl">
           <Reveal>
             <p className="label-text text-center mb-6">Under the Hood</p>
@@ -593,7 +593,7 @@ function Home() {
 
       {/* ── CTA ── */}
       <section className="py-28 px-6 relative overflow-hidden">
-        <ConfettiField particleCount={140} />
+
         <div className="relative z-10 mx-auto max-w-3xl text-center">
           <Reveal>
             <h2 className="display-lg mb-6">

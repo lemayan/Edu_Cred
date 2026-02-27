@@ -565,12 +565,13 @@ export async function fetchAddressAssets(address) {
   return (data.amount ?? []).filter((a) => a.unit !== "lovelace");
 }
 
-export function hexToString(hex) {
-  if (!hex) return '';
-  // Skip if not hex
+
+export function hexToString(hex){
+  if (!hex) return "";
+
   if (!/^[0-9a-fA-F]+$/.test(hex)) return hex;
 
-  let str = '';
+  let str = "";
   try {
     for (let i = 0; i < hex.length; i += 2) {
       str += String.fromCharCode(parseInt(hex.substr(i, 2), 16));
